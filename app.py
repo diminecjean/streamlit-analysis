@@ -1,6 +1,38 @@
 import streamlit as st
-from api_secrets import OPEN_AI_KEY
+import pandas as pd
+import streamlit_pandas as sp
+import time
 
 import os
 
-st.title("this is a test")
+from st_pages import Page, add_page_title, show_pages
+
+st.title("Streamlit Data Analysis")
+
+
+show_pages(
+    [
+        Page("./app.py","Home","🏠"),
+        Page("./pages/page1.py", "Income Dataset", "💵"),
+        Page("./pages/page2.py", "Example 2")
+    ]
+)
+
+data_file = st.file_uploader("Upload your dataset in the form of CSV",type=["csv"])
+		
+if data_file is not None:
+
+    file_details = {"filename":data_file.name, "filetype":data_file.type,
+                    "filesize":data_file.size}
+    
+    df = pd.read_csv(data_file)
+
+    all_widgets = sp.create_widgets(df)
+    res = sp.filter_df(df, all_widgets)
+
+    tab11, tab12 = st.tabs(["Original Dataset", "Filtered Dataset"])
+    with tab11:
+        st.write(df)
+
+    with tab12:
+        st.write(res)
